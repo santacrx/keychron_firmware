@@ -19,6 +19,7 @@
  */
 
 #include QMK_KEYBOARD_H
+#include "keychron_common.h"
 #include "print.h"
 #include "math.h"
 //#include "keychron_common.h"
@@ -42,7 +43,7 @@ enum layers{
 
 // adding custom keycodes for layer cycling using the knob
 enum custom_keycodes{
-  LAYERUP = SAFE_RANGE,
+  LAYERUP = SAFE_RANGE_NEW, //read in reddit abobut the _NEW being added. testing to see if it'll compile this way
   LAYERDN,
   LAYERGO,
   LAYER00,
@@ -64,11 +65,11 @@ enum custom_keycodes{
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FN] = LAYOUT_ansi_89(
-        _______,  KC_CALC,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_PGUP,
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
-        _______,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  KC_CALC,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            _______,
+        _______,  _______,  BT_HST1,  BT_HST2,  BT_HST3,  P2P4G,    _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           _______,
+        _______,  RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           KC_PGUP,
+        _______,  _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
+        _______,  _______,            _______,  _______,  _______,  _______,   BAT_LVL,  BAT_LVL,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
         _______,  _______,  _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
@@ -77,7 +78,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XS_DEGR,   KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
         XS_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
         XS_MICR,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP), KC_UP,
-        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             KC_APP,                       KC_LEFT,      KC_DOWN, KC_RGHT),
+        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             RALT(KC_APP),                       KC_LEFT,      KC_DOWN, KC_RGHT),
 
     [_LV] = LAYOUT_ansi_89(
         WIN_ZUM,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -222,12 +223,12 @@ void updateKnobLayer(void){
   uprintf("updateKnob called. ID:%2u, Mask:%2u\n",currLayerID, currLayerMask);
   //layer_clear();
   layer_state_set(currLayerMask);
-  
+  /*
   // change color of M column based on ID layer selected
   for(uint8_t col = 0; col < 5; ++col){
     rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
   }
-  
+  */
 }
 
 // Add the behaviour for custom keycodes
@@ -475,11 +476,11 @@ layer_state_t layer_state_set_user(layer_state_t state) {
       print("updateKnob called\n");
       // change color of M column based on ID layer selected
     }
-    */
+    
     for(uint8_t col = 0; col < 5; ++col){
       rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
     }
-  
+    */
     break;
   }
   prevLayerInt = biton32(state);
