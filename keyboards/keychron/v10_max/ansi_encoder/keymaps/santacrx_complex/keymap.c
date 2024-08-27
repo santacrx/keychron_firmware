@@ -67,17 +67,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  KC_CALC,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            _______,
         _______,  _______,  BT_HST1,  BT_HST2,  BT_HST3,  P2P4G,    _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           _______,
         _______,  RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           KC_PGUP,
-        _______,  _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            KC_PGDN,
+        _______,  _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,           KC_PGDN,
         _______,  _______,            _______,  _______,  _______,  _______,   BAT_LVL,  BAT_LVL,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
         _______,  _______,  _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
         _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
         XS_NTIL,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,               KC_DEL,
-        XS_DEGR,   KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
+        XS_DEGR,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
         XS_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
         XS_MICR,  KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RCTL(KC_APP), KC_UP,
-        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             RALT(KC_APP),                       KC_LEFT,      KC_DOWN, KC_RGHT),
+        XXXXXXX,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   LAYER00,                       KC_SPC,             RALT(KC_APP),                 KC_LEFT,      KC_DOWN, KC_RGHT),
 
     [_LV] = LAYOUT_ansi_89(
         WIN_ZUM,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -120,7 +120,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XXXXXXX,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_NUM] = LAYOUT_ansi_89(
-        KC_MS_BTN3, RGB_TOG,  RGB_HUD,  	RGB_HUI,  	RGB_SAD,      RGB_SAI,    RGB_VAD,   RGB_VAI, RGB_RMOD,  RGB_MOD, RGB_SPD,  RGB_SPI,  XXXXXXX,  XXXXXXX,  _______,            _______,
+        KC_MS_BTN3, XXXXXXX,  XXXXXXX,  	XXXXXXX,  	XXXXXXX,      XXXXXXX,    XXXXXXX,   XXXXXXX, XXXXXXX,   XXXXXXX, XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,            _______,
         XXXXXXX,    XXXXXXX,  XXXXXXX,    XXXXXXX,    XXXXXXX,      XXXXXXX,    XXXXXXX,   XXXXXXX, KC_PSLS,   KC_PAST, KC_PMNS,  XXXXXXX,  _______,  _______,  _______,            _______,
         XXXXXXX,    _______,  XXXXXXX,    KC_MS_UP,  	XXXXXXX,      XXXXXXX,    XXXXXXX,   KC_P7,   KC_P8,     KC_P9,   KC_PPLS,  XXXXXXX,  XXXXXXX,  XXXXXXX,  _______,            KC_PGUP,
         XXXXXXX,    XXXXXXX,  KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT,  XXXXXXX,    XXXXXXX,   KC_P4,   KC_P5,     KC_P6,   KC_PPLS,  XXXXXXX,  XXXXXXX,            _______,            KC_PGDN,
@@ -178,13 +178,14 @@ static uint8_t currLayerMask;  // mask is ID  ORed with b0010
 // global constant for Zoom On off for Macro
 static uint8_t winZoomOn = 0;
 // init color selction per layer ID
-static uint8_t MkeyColors[6][3] = {
+static uint8_t MkeyColors[7][3] = {
   {HSV_TEAL},//0
-  {HSV_GOLD},//1
-  {HSV_PURPLE},//2
-  {HSV_RED},//3
-  {HSV_GREEN},//4
-  {HSV_PINK}//5
+  {HSV_TEAL},//1
+  {HSV_GOLD},//2
+  {HSV_PURPLE},//3
+  {HSV_RED},//4
+  {HSV_GREEN},//5
+  {HSV_PINK}//6
 };
 // M column indeces definition for color changes
 static uint8_t M_leds_idx[] = {15,31,47,62,77};
@@ -227,13 +228,17 @@ void updateKnobLayer(void){
   /*
   // change color of M column based on ID layer selected
   for(uint8_t col = 0; col < 5; ++col){
-    rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
+    rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
   }
   */
 }
 
 // Add the behaviour for custom keycodes
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  // Get current mod and one-shot mod states.
+  const uint8_t mods = get_mods();
+  const uint8_t oneshot_mods = get_oneshot_mods();
+
   switch (keycode) {
 
     // Cylce M layer by 1
@@ -251,7 +256,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           currLayerID = 1;
       }
       uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
-      rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
+      rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
       return false;
 
     // Cycle M layer down 1  
@@ -269,7 +274,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           currLayerID = 6;
       }
       uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
-      rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
+      rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
       return false;
 
     // Process the M layer change/ application
@@ -391,12 +396,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
 
     case XS_NTIL:
-      if(record->event.pressed){
-        register_code(KC_LALT);
-        tap_code(KC_P1);
-        tap_code(KC_P6);
-        tap_code(KC_P4);
-        unregister_code(KC_LALT);
+      if (record->event.pressed) {
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT);  
+          // do the shifted behavior
+          register_code(KC_LALT);
+          tap_code(KC_P1);
+          tap_code(KC_P6);
+          tap_code(KC_P5);
+          unregister_code(KC_LALT);
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no shift held
+          register_code(KC_LALT);
+          tap_code(KC_P1);
+          tap_code(KC_P6);
+          tap_code(KC_P4);
+          unregister_code(KC_LALT);
+        }
       }
       return false;
 
@@ -462,7 +481,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   default:
     // _BASE and above, 
     // If user changed color mode while in _NUM, update the constant value
-    if ((rgb_matrix_get_mode() != RGB_MATRIX_CYCLE_LEFT_RIGHT) && (prevLayerInt == 7)) {
+    if ((rgb_matrix_get_mode() != RGB_MATRIX_BAND_SPIRAL_VAL) && (prevLayerInt == 0) && (currLayerID == 1)) {
+      printf("We are back from 0, no change in layers, and RBG mode changed, updating last value.\n");
       rgbModelast = rgb_matrix_get_mode();
       rgbHSVlast = rgb_matrix_get_hsv();
     }
@@ -479,12 +499,12 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     }
     
     for(uint8_t col = 0; col < 5; ++col){
-      rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
+      rgb_matrix_set_color(M_leds_idx[col],MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
     }
     */
     break;
   }
-  prevLayerInt = biton32(state);
+  prevLayerInt = current_layer;
   return state;
 }
 
@@ -518,7 +538,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // else, we can color M column if within the layer range
     }else if((layer > 1 && layer < 7)){
       //print("M column color being called\n");
-      HSV h = {MkeyColors[layer-1][0],MkeyColors[layer-1][1],MkeyColors[layer-1][2]};
+      HSV h = {MkeyColors[layer][0],MkeyColors[layer][1],MkeyColors[layer][2]};
       RGB hr = hsv_to_rgb(h);
       for(uint8_t col = 0; col < 5; ++col){
         rgb_matrix_set_color(M_leds_idx[col],hr.r,hr.g,hr.b);
