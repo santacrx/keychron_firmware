@@ -22,7 +22,6 @@
 #include "keychron_common.h"
 #include "print.h"
 #include "math.h"
-//#include "keychron_common.h"
 
 // clang-format off
 
@@ -43,7 +42,7 @@ enum layers{
 
 // adding custom keycodes for layer cycling using the knob
 enum custom_keycodes{
-  LAYERUP = SAFE_RANGE_NEW, //read in reddit abobut the _NEW being added. testing to see if it'll compile this way
+  LAYERUP = SAFE_RANGE, //read in reddit abobut the _NEW being added. testing to see if it'll compile this way
   LAYERDN,
   LAYERGO,
   LAYER00,
@@ -60,7 +59,7 @@ enum custom_keycodes{
   XS_SECT
 };
 
-#define KC_TASK LGUI(KC_TAB)
+//#define KC_TASK LGUI(KC_TAB)
 #define KC_FLXP LGUI(KC_E)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -147,6 +146,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 //  MODS 
 //=========
 
+/*
 // DIPSWITCH
 // ---------
 // map what the dipswitch does: turn lights on or off (LH=ON, RH=OFF)
@@ -162,6 +162,7 @@ bool dip_switch_update_user(uint8_t index, bool active) {
     return true;
 }
 #endif
+*/
 
 // KNOB LAYER SELECTION WITH LIGHTS PER LAYER
 // ------------------------------------------
