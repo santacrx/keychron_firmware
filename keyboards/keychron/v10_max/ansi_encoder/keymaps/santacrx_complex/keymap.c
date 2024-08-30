@@ -343,8 +343,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_GVAR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code16(LALT(KC_SPC)); 
-        SEND_STRING(SS_DELAY(150) "while" SS_DELAY(150));
+        tap_code16(LCTL(KC_SPC)); 
+        SEND_STRING(SS_DELAY(150) "while loop" SS_DELAY(150));
         tap_code(KC_ENT);
       }
       return false;
@@ -354,8 +354,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_FOR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (!record->event.pressed) { 
-        tap_code16(LALT(KC_SPC)); 
-        SEND_STRING(SS_DELAY(150) "for" SS_DELAY(150));
+        tap_code16(LCTL(KC_SPC)); 
+        SEND_STRING(SS_DELAY(150) "for loop" SS_DELAY(150));
         tap_code(KC_ENT);
       }
       return false;
@@ -365,7 +365,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_LVAR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code16(LALT(KC_SPC)); 
+        tap_code16(LCTL(KC_SPC)); 
         SEND_STRING(SS_DELAY(150) "local" SS_DELAY(150));
         tap_code(KC_ENT);
       }
@@ -376,7 +376,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_GVAR\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code16(LALT(KC_SPC)); 
+        tap_code16(LCTL(KC_SPC)); 
         SEND_STRING(SS_DELAY(150) "global" SS_DELAY(150));
         tap_code(KC_ENT);
       }
@@ -476,7 +476,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   case 0:
     // _FN: sprial with color based on M layer ID
     rgb_matrix_mode_noeeprom(RGB_MATRIX_BAND_SPIRAL_VAL);
-    rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID-1][0],MkeyColors[currLayerID-1][1],MkeyColors[currLayerID-1][2]);
+    rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
     break;
   case 7:
     // _NUM
