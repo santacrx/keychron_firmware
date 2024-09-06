@@ -64,12 +64,12 @@ enum custom_keycodes{
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_FN] = LAYOUT_ansi_89(
-        _______,  KC_CALC,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            _______,
-        _______,  _______,  BT_HST1,  BT_HST2,  BT_HST3,  P2P4G,    _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           _______,
-        _______,  RGB_TOG,  RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           KC_PGUP,
-        _______,  _______,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,           KC_PGDN,
-        _______,  _______,            _______,  _______,  _______,  _______,   BAT_LVL,  BAT_LVL,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  _______,  _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
+        _______,  QK_RBT,       KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  RGB_VAD,   RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_CALC,            _______,
+        _______,  _______,      BT_HST1,  BT_HST2,  BT_HST3,  P2P4G,    _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           _______,
+        _______,  RGB_TOG,      RGB_MOD,  RGB_VAI,  RGB_HUI,  RGB_SAI,  RGB_SPI,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,           KC_PGUP,
+        _______,  _______,      RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,   _______,  _______,  _______,  _______,  _______,  _______,            _______,           KC_PGDN,
+        _______,  LSFT_T(KC_NO),_______,  _______,  _______,  _______,   BAT_LVL,  BAT_LVL,  NK_TOGG,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,      _______,            _______,  _______,  LAYERGO,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
         _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
@@ -169,9 +169,10 @@ bool dip_switch_update_user(uint8_t index, bool active) {
 // Modded to match/use Matrix effects [See Readme Sources, 2.1]
 
 // create constant placeholders for RGB light mode and HSV
-static uint8_t rgbModelast;
-static HSV rgbHSVlast;
-static uint8_t rgbVALlast;
+uint8_t rgbLastMode; 
+HSV rgbLastHsv;
+uint8_t rgbLastVal;
+bool rgbLastState;
 static int8_t prevLayerInt;
 // global constants  for the layer change gig
 static uint8_t currLayerID;
@@ -180,13 +181,13 @@ static uint8_t currLayerMask;  // mask is ID  ORed with b0010
 static uint8_t winZoomOn = 0;
 // init color selction per layer ID
 static uint8_t MkeyColors[7][3] = {
-  {HSV_TEAL},//0
-  {HSV_TEAL},//1
-  {HSV_GOLD},//2
-  {HSV_PURPLE},//3
-  {HSV_RED},//4
-  {HSV_GREEN},//5
-  {HSV_PINK}//6
+  {HSV_TEAL},   //0
+  {HSV_TEAL},   //1
+  {HSV_GOLD},   //2  _LV
+  {HSV_GREEN},  //3  _DAT
+  {HSV_PURPLE}, //4  _VS
+  {HSV_RED},    //5  _CAD
+  {HSV_PINK}    //6  _NA
 };
 // M column indeces definition for color changes
 static uint8_t M_leds_idx[] = {15,31,47,62,77};
@@ -203,9 +204,10 @@ void eeconfig_init_user(void) {  // EEPROM is getting reset!
   rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
   rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
   // update constant value
-  rgbModelast = rgb_matrix_get_mode();
-  rgbHSVlast = rgb_matrix_get_hsv();
-  rgbVALlast = rgb_matrix_get_val();
+  rgbLastMode = rgb_matrix_get_mode();
+  rgbLastHsv = rgb_matrix_get_hsv();
+  rgbLastVal = rgb_matrix_get_val();
+  rgbLastState = rgb_matrix_is_enabled();
   prevLayerInt = 0;
   currLayerID = 1;
   winZoomOn = 0;
@@ -217,6 +219,7 @@ void keyboard_post_init_user(void) {
   //debug_matrix=true;
   //debug_keyboard=true;
   layer_state_set(2);
+  rgb_matrix_enable();
   rgb_matrix_sethsv(HSV_TEAL);  // Set it to teal by default
   rgb_matrix_mode(RGB_MATRIX_GRADIENT_UP_DOWN); // set the default
 }
@@ -264,7 +267,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
           print("SHIFT + LAYERUP!\n");
-          tap_code16(RGB_MOD);
+          tap_code16(KC_VOLU);
         } else { // no shift held
           // +1. then check if we are within the range, if not, go back to 1
           currLayerID+=1;
@@ -284,7 +287,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) { 
         if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
           print("SHIFT + LAYERDN!\n");
-          tap_code16(RGB_RMOD);
+          tap_code16(KC_VOLD);
         } else { // no shift held
           // -1. then check if we are within the range, if not, go back to 1
           currLayerID-=1;
@@ -382,21 +385,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
     
-    // tell excel to add a row
+    // tell excel to add a row, delete if shift is held
     case EX_ADDR:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code(KC_LALT); 
-        send_string("irr");
+        // send commands depending if shift is held or not
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT); 
+          // send macro 
+          tap_code16(LALT(KC_H));
+          send_string("dr");
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no mods held
+          tap_code16(LALT(KC_H));
+          send_string("ir");
+        }
       }
       return false;
     
-    // tell excel to add a column
+    // tell excel to add a column, delete if shift is held
     case EX_ADDC:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        tap_code(KC_LALT); 
-        send_string("irc");
+        // send commands depending if shif is held or nor 
+        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+          // Temporarily delete shift.
+          del_oneshot_mods(MOD_MASK_SHIFT);
+          unregister_mods(MOD_MASK_SHIFT); 
+          // send macro 
+          tap_code16(LALT(KC_H));
+          send_string("dc");
+          // Restore mods.
+          register_mods(mods);            
+        } else { // no mods held
+          tap_code16(LALT(KC_H));
+          send_string("ic");
+        }
       }
       return false;
 
@@ -470,11 +497,11 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   // determine layer jump and direction
   uint8_t current_layer = get_highest_layer(state);
   uprintf("state: %2u; biton32(state): %2u; highest layer: %2u; prevLayer: %2u; knobLayer: %2u;\n",state,biton32(state),current_layer,prevLayerInt,currLayerID);
-  //static effect_params_t* params;
-  //switch(biton32(state)) {
+  // Perform action based on which highes layer is active
   switch(current_layer){
   case 0:
     // _FN: sprial with color based on M layer ID
+    rgb_matrix_enable();
     rgb_matrix_mode_noeeprom(RGB_MATRIX_BAND_SPIRAL_VAL);
     rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
     break;
@@ -488,13 +515,22 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     // If user changed color mode while in _NUM, update the constant value
     if ((rgb_matrix_get_mode() != RGB_MATRIX_BAND_SPIRAL_VAL) && (prevLayerInt == 0) && (currLayerID == 1)) {
       printf("We are back from 0, no change in layers, and RBG mode changed, updating last value.\n");
-      rgbModelast = rgb_matrix_get_mode();
-      rgbHSVlast = rgb_matrix_get_hsv();
-      rgbVALlast = rgb_matrix_get_val();
+      // get new desired value when changed by user
+      rgbLastState = rgb_matrix_is_enabled();
+      rgbLastMode = rgb_matrix_get_mode();
+      rgbLastHsv = rgb_matrix_get_hsv();
+      rgbLastVal = rgb_matrix_get_val();
+      // write the current states to eeprom
+      rgbLastState ? rgb_matrix_enable() : rgb_matrix_disable();
+      rgb_matrix_mode(rgbLastMode);
+      rgb_matrix_sethsv(rgbLastHsv.h,rgbLastHsv.s,rgbLastVal);
+    } else {
+      // if no change, go to last settings without writing to eeprom
+      rgbLastState ? rgb_matrix_enable_noeeprom() : rgb_matrix_disable_noeeprom();
+      rgb_matrix_mode_noeeprom(rgbLastMode);
+      rgb_matrix_sethsv_noeeprom(rgbLastHsv.h,rgbLastHsv.s,rgbLastVal);
     }
 
-    rgb_matrix_mode_noeeprom(rgbModelast);
-    rgb_matrix_sethsv_noeeprom(rgbHSVlast.h,rgbHSVlast.s,rgbVALlast);
     
     // _BASE and the macro layers
     /*
@@ -544,6 +580,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // else, we can color M column if within the layer range
     }else if((layer > 1 && layer < 7)){
       //print("M column color being called\n");
+      //uint8_t time = scale16by8(g_rgb_timer, qadd8(rgb_matrix_config.speed / 4, 1));
       HSV h = {MkeyColors[layer][0],MkeyColors[layer][1],MkeyColors[layer][2]};
       RGB hr = hsv_to_rgb(h);
       for(uint8_t col = 0; col < 5; ++col){
@@ -554,3 +591,4 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
     return false;
 }
+

@@ -118,13 +118,25 @@ When returning from 0, the respective overlay will be activated.
   * Transparent or unsassigned keys have no backlight. 
   * CAPS only has alphas ON
 * Each layer has now a visible distinction, besides the stated above:
-  * `_NUM` is visibly different than the rest with rainbow pattern. 
+  * `_NUM` is visibly different than the rest with rainbow pattern.
   * `_BASE` and above, except `_NUM` 
     * share the same pattern
-    * Macro column has different color based on which layer is active
-  * `_FN` has diagonal to LH-HI corner (mimicking pointing to knob)
+    * Macro column has different color based on which layer is active      
+  * `_FN` has single color dual pinwheel with color referenced to current macro layer color
+
+#### Showcase
+* `_BASE` to `_NUM` and back:  
+[![NUM layer showcase](https://drive.google.com/uc?id=1DHRFX05zgsYoAEck-ZUMgAMwF3xJfapj)]
+
+* `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
+[![Macro changing color and showing in BASE](https://drive.google.com/uc?id=15wptLoVBV8B5kRAUD-HkCgHs2k5gA-uA)]
+
 
 ## Worflow / Desired Features / Bugs
+*v1.0.1* modding to have a similar keymap layout with my V10 max. Also, removing redundant/wrongly implemented coloring functions. 
+Am considering heavily avoiding the multiple empty layers and just have more complex "keys" that will be changing behavior based on `currLayerID` and even mods.
+Would like to change behavior of some macros (hell, even the knob!) when holding Shift of Caps. 
+Will plan out and have that as v1.1.
 
 *v1.0* released with the workflow below. 
 All upcoming changes will be simple delta releases. 
