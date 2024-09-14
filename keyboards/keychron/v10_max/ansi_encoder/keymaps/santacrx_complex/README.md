@@ -134,16 +134,11 @@ When returning from 0, the respective overlay will be activated.
   * `_FN` has single color dual pinwheel with color referenced to current macro layer color
 
 #### Showcase
-* `_BASE` to `_NUM` and back:
-<p>
-    <img src="http://git.santacrx.info/assets/img/keebs/_complex_num.gif" width="600" height="338" alt="_NUM layer showcase"/>
-</p>  
-
+* `_BASE` to `_NUM` and back:  
+[![NUM layer showcase](http://http://git.santacrx.info/assets/img/keebs/_complex_num.gif)]
 
 * `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
-<p>
-    <img src="http://git.santacrx.info/assets/img/keebs/_complex_layers.gif" width="600" height="338" alt="Macro changing color and showing in _BASE"/>
-</p>
+[![Macro changing color and showing in BASE](http://http://git.santacrx.info/assets/img/keebs/_complex_layers.gif)]
 
 
 ## Worflow / Desired Features / Bugs
