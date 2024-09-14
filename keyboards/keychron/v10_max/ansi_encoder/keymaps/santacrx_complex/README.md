@@ -37,7 +37,7 @@ Layer definition:
 |  2  | x06  | `_LV`   | ↑	      |Labview	| ↑	            |↑+Orange Macros|
 |  3  | x0A  | `_DAT`  | ↑ 	      |Data		| ↑	            |↑+Purple Macros|
 |  4  | x12  | `_VS`   | ↑ 	      |Code		|L/R Arrow	    |↑+Red Macros|
-|  5  | x22  | `_CAD`  | ↑ 	      |Onshape	|Volume	        |↑+Green Macros|
+|  5  | x22  | `_CAD`  | ↑ 	      |Onshape	|Pan/Rotate     |↑+Green Macros|
 |  6  | x42  |	`_NA`  | ↑	      | --	    |Music	        |↑+Pink			|
 |  7  | --   | `_NUM`  |NUM+MOUSE | --    	|U/D Wheel	    |Party|
 
@@ -90,26 +90,35 @@ When returning from 0, the respective overlay will be activated.
   * Change light setting based on which layer group we are on
   * make the Macro key's background color based on macro layer selected
   * layer selection layer color is based on macro setting (see table above)
+  * goint to the layer can be momentary (holding) or locked in place (shift while releasing)
 
 ### Macros
+* Function
+  * knob
+    * press: execute layer change, mute when shifted
+    * rotation: layer selection, volumne when shifted
 * Base
   * N tilde
-  * Degree symbol
-  * Section symbol
-  * Mu
+  * Degree or pi symbol
+  * Plus minus or Section symbol
+  * mu or omega
+  * delta or Delta
 * LabVIEW
-  * While Loop
-  * For Loop
-  * Local Variable
-  * Global Variable
+  * While or For Loop
+  * Case or Sequence frame
+  * Local or Global Variable
+  * front/back panel switch
+  * knob press activates <-> deactivates windows zoom
 * Excel/Data
-  * Add Row
-  * Add Column
+  * Add or delete Row
+  * Add or delete Column
 * Code
   * Up directory
   * Open CMD in admin mode
 * CAD/OnShape
   * Pan modifier
+  * detail rotate modifier
+  * knob press changes up/down <-> right/left at knob
   
 ### Lights
 
@@ -125,14 +134,23 @@ When returning from 0, the respective overlay will be activated.
   * `_FN` has single color dual pinwheel with color referenced to current macro layer color
 
 #### Showcase
-* `_BASE` to `_NUM` and back:  
-[![NUM layer showcase](https://drive.google.com/uc?id=1DHRFX05zgsYoAEck-ZUMgAMwF3xJfapj)]
+* `_BASE` to `_NUM` and back:
+<p>
+    <img src="http://git.santacrx.info/assets/img/keebs/_complex_num.gif" width="600" height="338" alt="_NUM layer showcase"/>
+</p>  
+
 
 * `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
-[![Macro changing color and showing in BASE](https://drive.google.com/uc?id=15wptLoVBV8B5kRAUD-HkCgHs2k5gA-uA)]
+<p>
+    <img src="http://git.santacrx.info/assets/img/keebs/_complex_layers.gif" width="600" height="338" alt="Macro changing color and showing in _BASE"/>
+</p>
 
 
 ## Worflow / Desired Features / Bugs
+*v1.1.0* added more complex macros and increasing flexibility and utility of knob using modifier keys.
+The lights work on all modes, albeit there is still a bug where right after flashing I have to toggle the light setting a  while between wires and wireless mode to stick. 
+It's something to do with keychron's wireless functions.
+
 *v1.0.1* modding to have a similar keymap layout with my V10 max. Also, removing redundant/wrongly implemented coloring functions. 
 Am considering heavily avoiding the multiple empty layers and just have more complex "keys" that will be changing behavior based on `currLayerID` and even mods.
 Would like to change behavior of some macros (hell, even the knob!) when holding Shift of Caps. 
