@@ -1,19 +1,28 @@
 # @santacrx's Keychron V10 Firmware mod
+
+> Note: This is a port of my [V10 firmware](https://github.com/santacrx/qmk_firmware/tree/santacrx_v10/keyboards/keychron/v10/ansi_encoder/keymaps/santacrx_complex) for my V10 Max.
+> Most of this ReadMe is the same as the V10's, except where differences in design or implementation were needed.
+
 This is my customization for my v10 to maximize the capabilities plus visuals I wanted. 
 This keymap has custom lighting per layer based on what the layer contents are. 
 This is a spin-off of my original keymap, with a more complex change of states using the knob, thus freeing the key to the right of the rh spacebar for something else.
 
+
 Basic function coloring is  still kept from `santacrx_layers`, but this is playground for using the knob to change macro and knob functionality without changing the basic keyboard ones. 
 I can have different macro layers available for regular typing, one for LabVIEW use, one for Excel & MATLAB/Simulink, one for VSCODE, and one for CAD, plus an extra one as a placeholder for future value. 
 I still have the qwerty layer and the numpad/mouse layer.
-Also the original OS switch at the back is now mapped to lights on/off. 
+~Also the original OS switch at the back is now mapped to lights on/off.~
+(Not on the V10 Max due to conflicts with Keychron's functions) 
 
-I will like to have a VIA customization turned on.
-That is the next step. I realized I could do the same behavior with just three layers a bunch of functions re-mapping the Macro Keys based on the global MacroID number.
+~I will like to have a VIA customization turned on.~
+~That is the next step.~
+VIA remapping works.
+I realized I could do the same behavior with just three layers a bunch of functions re-mapping the Macro Keys based on the global MacroID number.
 Might branch and try that to see if there is any performance or bin file size improvement. 
 For now, I'll keep this as it's doing what I wanted to.
-Also, just bought a V10 Max for home (my wired one being now at work).
-Need to figure out if this firmware will work with it.
+~Also, just bought a V10 Max for home (my wired one being now at work).~
+~Need to figure out if this firmware will work with it.~
+This is a separate repo branched off of Keychron's as QMK does not have the Max in there.
 
 
 ## Layers
@@ -30,15 +39,15 @@ I made the decision to have 8 layers just beacause its a clean binary number and
 
 Layer definition:
 
-| Bit |Status|	Name   |	Keys  |	Macros	|	Knob        |	Lights	|
+| Bit |Status|	Name   |	Keys    |	Macros	|	Knob          |	Lights	|
 |:---:|:----:|---------|----------|---------|-----------    |-----------|
 |  0  | --   | `_FN`   | --	      | --	    |Change M Layer |Spiral|
 | *1* | x02  |*`_BASE`*|*QWERTY*  |*Typing*	|*Side Scroll*  |*Regular*| 
 |  2  | x06  | `_LV`   | ↑	      |Labview	| ↑	            |↑+Orange Macros|
-|  3  | x0A  | `_DAT`  | ↑ 	      |Data		| ↑	            |↑+Purple Macros|
-|  4  | x12  | `_VS`   | ↑ 	      |Code		|L/R Arrow	    |↑+Red Macros|
+|  3  | x0A  | `_DAT`  | ↑ 	      |Data		  | ↑	            |↑+Purple Macros|
+|  4  | x12  | `_VS`   | ↑ 	      |Code		  |L/R Arrow	    |↑+Red Macros|
 |  5  | x22  | `_CAD`  | ↑ 	      |Onshape	|Pan/Rotate     |↑+Green Macros|
-|  6  | x42  |	`_NA`  | ↑	      | --	    |Music	        |↑+Pink			|
+|  6  | x42  | `_NA`   | ↑	      | --	    |Music	        |↑+Pink			|
 |  7  | --   | `_NUM`  |NUM+MOUSE | --    	|U/D Wheel	    |Party|
 
 ### Layout
@@ -60,10 +69,11 @@ Overlay feature layer
 |     /           /           |
 |  0 /___________/          0 |   0
 |                                 +
-`--- default_layer = 1            |
+'--- default_layer = 1            |
      layer_state   = 0x0022 <-----'
 ```
 
+### Functionality
 Layers 0 and 7 will be toggled by the FN and NUM keys respectively.
 Layers 1 through 6 are the default and overlays respectively.
 The cycle will be 1→0→1, or 1→7→1. 
@@ -71,7 +81,7 @@ When in 0, the knob cycles the overlay.
 The Macro keys' backlighting will change according to the selected overlay setting.
 When returning from 0, the respective overlay will be activated.
 
-## Features and Functionality
+## Features and Functions
 
 ### Layer Interface backbone
 * Layer 1 *_BASE* set as default in initializing function
@@ -90,7 +100,7 @@ When returning from 0, the respective overlay will be activated.
   * Change light setting based on which layer group we are on
   * make the Macro key's background color based on macro layer selected
   * layer selection layer color is based on macro setting (see table above)
-  * goint to the layer can be momentary (holding) or locked in place (shift while releasing)
+  * going to the layer can be momentary (holding) or locked in place (shift while releasing)
 
 ### Macros
 * Function
@@ -143,8 +153,10 @@ When returning from 0, the respective overlay will be activated.
 
 ## Worflow / Desired Features / Bugs
 *v1.1.0* added more complex macros and increasing flexibility and utility of knob using modifier keys.
-The lights work on all modes, albeit there is still a bug where right after flashing I have to toggle the light setting a  while between wires and wireless mode to stick. 
-It's something to do with keychron's wireless functions.
+The lights work on all modes, albeit there is still a bug where right after flashing I have to toggle the light setting a  while between wired and wireless mode to stick. 
+~It's something to do with keychron's wireless functions.~
+No, not issue persists in V10, so independent of Keychron's wireless stuff
+🐛 After switching  between `_NUM` or `_FN` and `_BASE` a bunch of times since flashing, lights turn off in `_BASE` upon return. 
 
 *v1.0.1* modding to have a similar keymap layout with my V10 max. Also, removing redundant/wrongly implemented coloring functions. 
 Am considering heavily avoiding the multiple empty layers and just have more complex "keys" that will be changing behavior based on `currLayerID` and even mods.
