@@ -43,11 +43,11 @@ Layer definition:
 |:---:|:----:|---------|----------|---------|-----------    |-----------|
 |  0  | --   | `_FN`   | --	      | --	    |Change M Layer |Spiral|
 | *1* | x02  |*`_BASE`*|*QWERTY*  |*Typing*	|*Side Scroll*  |*Regular*| 
-|  2  | x06  | `_LV`   | ↑	      |Labview	| ↑	            |↑+Orange Macros|
-|  3  | x0A  | `_DAT`  | ↑ 	      |Data		  | ↑	            |↑+Purple Macros|
-|  4  | x12  | `_VS`   | ↑ 	      |Code		  |L/R Arrow	    |↑+Red Macros|
-|  5  | x22  | `_CAD`  | ↑ 	      |Onshape	|Pan/Rotate     |↑+Green Macros|
-|  6  | x42  | `_NA`   | ↑	      | --	    |Music	        |↑+Pink			|
+|  2  | x06  | `_LV`   | ↑	      |Labview	| ↑	            |↑+Gold Macros|
+|  3  | x0A  | `_DAT`  | ↑ 	      |Data		  | ↑	            |↑+Green Macros|
+|  4  | x12  | `_VS`   | ↑ 	      |Code		  |L/R Arrow	    |↑+Purple Macros|
+|  5  | x22  | `_CAD`  | ↑ 	      |Onshape	|Arrows (see desc)     |↑+Red Macros|
+|  6  | x42  | `_NA`   | ↑	      | --	    |Music	        |↑+Pink	Macros|
 |  7  | --   | `_NUM`  |NUM+MOUSE | --    	|U/D Wheel	    |Party|
 
 ### Layout
@@ -74,9 +74,9 @@ Overlay feature layer
 ```
 
 ### Functionality
-Layers 0 and 7 will be toggled by the FN and NUM keys respectively.
+Layers 0 and 7 will be toggled by the <kbd>FN</kbd> and <kbd>NUM</kbd> keys respectively.
 Layers 1 through 6 are the default and overlays respectively.
-The cycle will be 1→0→1, or 1→7→1. 
+The cycle will be <kbd>FN</kbd>: 1→0→1 , or <kbd>NUM</kbd>: 1→7→1. 
 When in 0, the knob cycles the overlay.
 The Macro keys' backlighting will change according to the selected overlay setting.
 When returning from 0, the respective overlay will be activated.
@@ -84,10 +84,10 @@ When returning from 0, the respective overlay will be activated.
 ## Features and Functions
 
 ### Layer Interface backbone
-* Layer 1 *_BASE* set as default in initializing function
+* Layer 1 `_BASE` set as default in initializing function
 * Debugging and console enabled
 * Use of `Layer_Move()` for layers 1-6
-* Use of custom function for layers 0 *_FN* and 7 *_NUM*
+* Use of custom function for layers 0 `_FN` and 7 `_NUM`
 
 ### Functions
 
@@ -101,34 +101,55 @@ When returning from 0, the respective overlay will be activated.
   * make the Macro key's background color based on macro layer selected
   * layer selection layer color is based on macro setting (see table above)
   * going to the layer can be momentary (holding) or locked in place (shift while releasing)
+  * Active modifier to the `_CAD` knob changes color to white
 
 ### Macros
-* Function
-  * knob
+* Function (`_FN`)
+  * Knob
     * press: execute layer change, mute when shifted
     * rotation: layer selection, volumne when shifted
-* Base
-  * N tilde
-  * Degree or pi symbol
-  * Plus minus or Section symbol
-  * mu or omega
-  * delta or Delta
-* LabVIEW
-  * While or For Loop
-  * Case or Sequence frame
-  * Local or Global Variable
-  * front/back panel switch
-  * knob press activates <-> deactivates windows zoom
-* Excel/Data
-  * Add or delete Row
-  * Add or delete Column
-* Code
-  * Up directory
-  * Open CMD in admin mode
-* CAD/OnShape
-  * Pan modifier
-  * detail rotate modifier
-  * knob press changes up/down <-> right/left at knob
+* Base (`_BASE`)
+  * Macro Keys
+      | Key | Press | <kbd>SHFT+</kbd> |
+      |:---:|:-----:|:-------:|
+      | <kbd>M1</kbd>  | ñ | Ñ |
+      | <kbd>M2</kbd>  | ° | π |
+      | <kbd>M3</kbd>  | ± | § |
+      | <kbd>M4</kbd>  | µ | Ω |
+      | <kbd>M5</kbd>  | δ |   |
+* LabVIEW (`_LV`)
+  * Knob
+    * press: activates <-> deactivates windows zoom
+    * rotation: Side Scrollwheel
+  * Macro Keys
+      | Key | Press | <kbd>SHFT+</kbd> |
+      |:---:|:-----:|:-------:|
+      | <kbd>M1</kbd>  | While Loop | For Loop |
+      | <kbd>M2</kbd>  | Case Frame | Sequence Frame |
+      | <kbd>M3</kbd>  | Local Variable | Global Variable |
+      | <kbd>M4</kbd>  | <kbd>CTRL+E</kbd>   |
+* Excel/Data (`_DAT`)
+  * Macro Keys
+      | Key | Press | <kbd>SHFT+</kbd> |
+      |:---:|:-----:|:-------:|
+      | <kbd>M1</kbd>  | Add Row | Delete Row |
+      | <kbd>M2</kbd>  | Add Column | Delete Column |
+* Code (`_VS`)
+  * Macro Keys
+      | Key | Press |
+      |:---:|:-----:|
+      | <kbd>M1</kbd>  | `../` |
+      | <kbd>M2</kbd>  | run `cmd` + go to repo dir |
+      | <kbd>M3</kbd>  | <kbd>CTRL+SHFT+P</kbd> |
+* CAD/OnShape (`_CAD`)
+  * Knob
+    * press: changes up/down <-> right/left at knob
+    * rotate: up/down or right/left
+  * Macro Keys
+      | Key | Press | Description |
+      |:---:|:-----:|-------------|
+      | <kbd>M1</kbd>  | Pan mod | Adds <kbd>LSFHT</kbd> before arrow press |
+      | <kbd>M2</kbd>  | Detail Rotate mod | Adds <kbd>CTRL</kbd> before arrow press |
   
 ### Lights
 
@@ -140,7 +161,8 @@ When returning from 0, the respective overlay will be activated.
   * `_NUM` is visibly different than the rest with rainbow pattern.
   * `_BASE` and above, except `_NUM` 
     * share the same pattern
-    * Macro column has different color based on which layer is active      
+    * Macro column has different color based on which layer is active
+    * `_CAD` changes from red to white if modifier key is active      
   * `_FN` has single color dual pinwheel with color referenced to current macro layer color
 
 #### Showcase
@@ -152,6 +174,8 @@ When returning from 0, the respective overlay will be activated.
 
 
 ## Worflow / Desired Features / Bugs
+*v1.1.1* added indication that the `_CAD` mods are active
+
 *v1.1.0* added more complex macros and increasing flexibility and utility of knob using modifier keys.
 The lights work on all modes, albeit there is still a bug where right after flashing I have to toggle the light setting a  while between wired and wireless mode to stick. 
 ~It's something to do with keychron's wireless functions.~

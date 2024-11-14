@@ -77,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,  _______,            _______,  _______,  LAYER00,                       _______,            _______,                      _______,  _______,  _______),
 
     [_BASE] = LAYOUT_ansi_89(
-        _______,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
+        XXXXXXX,  KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   TG(_NUM),              KC_PSCR,
         XS_NTIL,  KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,      KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,               KC_DEL,
         XS_DEGR,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
         XS_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
@@ -101,12 +101,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XXXXXXX,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_VS] = LAYOUT_ansi_89(
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        XXXXXXX,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
-        XXXXXXX,  _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        XXXXXXX,  _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
+        XXXXXXX,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        RCS(KC_P),  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        XXXXXXX,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,            _______,            _______,
+        XXXXXXX,    _______,            _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        XXXXXXX,    _______,  _______,            _______,  _______,  _______,                       _______,            _______,                      _______,  _______,  _______),
 
     [_CAD] = LAYOUT_ansi_89(
         CAD_CHG,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -239,6 +239,78 @@ void updateKnobLayer(void){
   layer_state_set(currLayerMask+1); // the +1 is to keep _FN always on in the background
 }
 
+// Function that hanldes the LabVIEW macros, as its a repetitive action with a couple varying inputs
+void santacrxLVmacro(char* normalStr, char* shiftedStr){
+  const uint8_t mods = get_mods();
+  const uint8_t oneshot_mods = get_oneshot_mods();
+  // send commands depending if shift is held or not
+  if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+    // Temporarily delete shift.
+    del_oneshot_mods(MOD_MASK_SHIFT);
+    unregister_mods(MOD_MASK_SHIFT); 
+    // send macro 
+    tap_code16(LCTL(KC_SPC)); 
+    SEND_STRING(SS_DELAY(150));
+    SEND_STRING(shiftedStr);
+    SEND_STRING(SS_DELAY(150));
+    tap_code(KC_ENT);
+    // Restore mods.
+    register_mods(mods);            
+  } else { // no mods held
+    tap_code16(LCTL(KC_SPC)); 
+    SEND_STRING(SS_DELAY(150));
+    SEND_STRING(normalStr);
+    SEND_STRING(SS_DELAY(150));
+    tap_code(KC_ENT);
+  }    
+}
+// Function that hanldes symbol generation macro using ATL and numpad. 
+void santacrxALTmacro(int ni,uint16_t normalArr[], int si,uint16_t shiftedArr[]){
+  const uint8_t mods = get_mods();
+  const uint8_t oneshot_mods = get_oneshot_mods();
+  //uint16_t N;
+  if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+    // Temporarily delete shift.
+    del_oneshot_mods(MOD_MASK_SHIFT);
+    unregister_mods(MOD_MASK_SHIFT);  
+    // do the shifted behavior
+    register_code(KC_LALT);
+    //N = sizeof(shiftedArr) / sizeof(shiftedArr[0]);
+    for(int i=0; i<si; i++){
+      tap_code(shiftedArr[i]);
+    }
+    unregister_code(KC_LALT);
+    // Restore mods.
+    register_mods(mods);            
+  } else { // no shift held
+    register_code(KC_LALT);
+    //N = sizeof(normalArr) / sizeof(normalArr[0]);
+    for(int i=0; i<ni; i++){
+      tap_code(normalArr[i]);
+    }
+    unregister_code(KC_LALT);
+  }
+    
+}
+// Function to handle arrow modding macro of the knob for the _CAD function
+void santacrxARRmacro(uint16_t kc_false,uint16_t kc_true){  
+  const uint8_t mods = get_mods();
+  const uint8_t oneshot_mods = get_oneshot_mods();
+
+  if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
+    // Temporarily delete shift.
+    del_oneshot_mods(MOD_MASK_SHIFT);
+    unregister_mods(MOD_MASK_SHIFT);  
+  } // do behavior
+  // check for flags. add ctrl and shift accordingly
+  if ((cadFlagState&4)>>2) register_code(KC_LCTL);
+  if ((cadFlagState&2)>>1) register_code(KC_LSFT);
+  (cadFlagState&1) ? tap_code(kc_true) : tap_code(kc_false);
+  if ((cadFlagState&2)>>1) unregister_code(KC_LSFT);
+  if ((cadFlagState&4)>>2) unregister_code(KC_LCTL);
+  // Restore mods.
+  if ((mods | oneshot_mods) & MOD_MASK_SHIFT) register_mods(mods); 
+}
 /*
 // Helper for implementing tap vs. long-press keys. Given a tap-hold
 // key event, replaces the hold function with `long_press_keycode`.
@@ -360,22 +432,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_LOOP\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        // send commands depending if shift is held or not
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT); 
-          // send macro 
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "fs" SS_DELAY(150));
-          tap_code(KC_ENT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no mods held
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "ws" SS_DELAY(150));
-          tap_code(KC_ENT);
-        }
+        santacrxLVmacro("ws","fs");
       }
       return false;
     
@@ -384,21 +441,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       print("LV_VARS\n");
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT); 
-          // send macro 
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "Global" SS_DELAY(150));
-          tap_code(KC_ENT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no mods held
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "local" SS_DELAY(150));
-          tap_code(KC_ENT);
-        }
+        santacrxLVmacro("Global","local");
       }
       return false;
     
@@ -406,22 +449,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case LV_CASE:
       print("LV_CASE\n");
       // Our logic will happen on presses, nothing is done on releases
-      if (record->event.pressed) { 
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT); 
-          // send macro 
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "fss" SS_DELAY(150));
-          tap_code(KC_ENT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no mods held
-          tap_code16(LCTL(KC_SPC)); 
-          SEND_STRING(SS_DELAY(150) "cs" SS_DELAY(150));
-          tap_code(KC_ENT);
-        }
+      if (record->event.pressed) {
+        santacrxLVmacro("fss","cs");        
       }
       return false;
     
@@ -470,123 +499,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // eñe, upper case when shift if held. 
     case XS_NTIL:
       if (record->event.pressed) {
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-          tap_code(KC_P1);
-          tap_code(KC_P6);
-          tap_code(KC_P5);
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held
-          register_code(KC_LALT);
-          tap_code(KC_P1);
-          tap_code(KC_P6);
-          tap_code(KC_P4);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[3]={KC_P1,KC_P6,KC_P4};
+        uint16_t arr2[3]={KC_P1,KC_P6,KC_P5};
+        santacrxALTmacro(3,arr1,3,arr2);
       }
       return false;
 
     // delta, upper and lower case
     case XS_DELT:
       if (record->event.pressed) {
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P3);
-          tap_code(KC_P5);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[3]={KC_P2,KC_P3,KC_P5};
+        //uint16_t arr2[]={};
+        santacrxALTmacro(3,arr1,3,arr1);
       }
       return false;
   
     // degree symbol on it's own,  pi when shifted
     case XS_DEGR:
       if(record->event.pressed){
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P2);
-          tap_code(KC_P7);
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held
-          register_code(KC_LALT);
-          tap_code(KC_P0);
-          tap_code(KC_P1);
-          tap_code(KC_P7);
-          tap_code(KC_P6);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[4]={KC_P0,KC_P1,KC_P7,KC_P6};
+        uint16_t arr2[3]={KC_P2,KC_P2,KC_P7};
+        santacrxALTmacro(4,arr1,3,arr2);
       }
       return false;
 
-    // Mu when on normal operation, Omega when shifted  
+    // Mu when on normal operation, Omega when shifted   
     case XS_MUOM:
       if(record->event.pressed){
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held? omega
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P3);
-          tap_code(KC_P4);
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held, mu
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P3);
-          tap_code(KC_P0);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[3]={KC_P2,KC_P3,KC_P0};
+        uint16_t arr2[3]={KC_P2,KC_P3,KC_P4};
+        santacrxALTmacro(3,arr1,3,arr2);
       }
       return false;
       
     // plusminus, section symbol when shifted
     case XS_SECT:
       if(record->event.pressed){
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-          // do the shifted behavior
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P1);
-          unregister_code(KC_LALT);
-          // Restore mods.
-          register_mods(mods);            
-        } else { // no shift held
-          register_code(KC_LALT);
-          tap_code(KC_P2);
-          tap_code(KC_P4);
-          tap_code(KC_P1);
-          unregister_code(KC_LALT);
-        }
+        uint16_t arr1[3]={KC_P2,KC_P4,KC_P1};
+        uint16_t arr2[2]={KC_P2,KC_P1};
+        santacrxALTmacro(3,arr1,2,arr2);
       }
       return false;
 
@@ -614,38 +565,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // up arrow or right arrow if flag is true
     case CAD_ARU:
       if(record->event.pressed){
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-        } // do behavior
-        // check for flags. add ctrl and shift accordingly
-        if ((cadFlagState&4)>>2) register_code(KC_LCTL);
-        if ((cadFlagState&2)>>1) register_code(KC_LSFT);
-        (cadFlagState&1) ? tap_code(KC_UP) : tap_code(KC_RGHT);
-        if ((cadFlagState&2)>>1) unregister_code(KC_LSFT);
-        if ((cadFlagState&4)>>2) unregister_code(KC_LCTL);
-        // Restore mods.
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {register_mods(mods);} 
+        santacrxARRmacro(KC_UP,KC_RIGHT);
       }
       return false;
 
     // down arrow or left arrow if flag is true
     case CAD_ARD:
-      if(record->event.pressed){
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          // Temporarily delete shift.
-          del_oneshot_mods(MOD_MASK_SHIFT);
-          unregister_mods(MOD_MASK_SHIFT);  
-        } // do behavior
-        // check for flags. add ctrl and shift accordingly
-        if ((cadFlagState&4)>>2) register_code(KC_LCTL);
-        if ((cadFlagState&2)>>1) register_code(KC_LSFT);
-        (cadFlagState&1) ? tap_code(KC_DOWN) : tap_code(KC_LEFT);
-        if ((cadFlagState&2)>>1) unregister_code(KC_LSFT);
-        if ((cadFlagState&4)>>2) unregister_code(KC_LCTL);
-        // Restore mods.
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {register_mods(mods);} 
+      if(record->event.pressed){        
+        santacrxARRmacro(KC_DOWN,KC_LEFT);
       }
       return false;
 
@@ -742,6 +669,9 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             rgb_matrix_set_color(M_leds_idx[col], RGB_BLACK);
         }else{ // set the Macro key to the respective layer color
             rgb_matrix_set_color(M_leds_idx[col],hr.r,hr.g,hr.b);
+            if (layer==5 && (cadFlagState & (int) pow(2,col+1))){
+                rgb_matrix_set_color(M_leds_idx[col], RGB_WHITE);
+            }
         }
       }
     }
