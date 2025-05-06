@@ -109,6 +109,11 @@ When returning from 0, the respective overlay will be activated.
     * press: execute layer change, mute when shifted
     * rotation: layer selection, volumne when shifted
 * Base (`_BASE`)
+  * Knob
+    * press: (empty)
+    * rotation: Side Scrollwheel; 
+      * +<kbd>SHIFT</kbd>: Volume when Shifted; 
+      * +<kbd>CTRL</kbd>: PGUP/DN
   * Macro Keys
       | Key | Press | <kbd>SHFT+</kbd> |
       |:---:|:-----:|:-------:|
@@ -167,13 +172,15 @@ When returning from 0, the respective overlay will be activated.
 
 #### Showcase
 * `_BASE` to `_NUM` and back:  
-[![NUM layer showcase](http://http://git.santacrx.info/assets/img/keebs/_complex_num.gif)]
+![NUM layer showcase](http://http://git.santacrx.info/assets/img/keebs/_complex_num.gif)
 
 * `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
-[![Macro changing color and showing in BASE](http://http://git.santacrx.info/assets/img/keebs/_complex_layers.gif)]
+![Macro changing color and showing in BASE](http://http://git.santacrx.info/assets/img/keebs/_complex_layers.gif)
 
 
 ## Worflow / Desired Features / Bugs
+*v1.2.0* adding mod masking function to knob/encoder in working layers
+
 *v1.1.1* added indication that the `_CAD` mods are active
 
 *v1.1.0* added more complex macros and increasing flexibility and utility of knob using modifier keys.

@@ -48,7 +48,7 @@ enum custom_keycodes{
   LAYER00,  //  go to _FN layer when held. Shift locks _FN layer
   WIN_ZUM,  //  call windows zoom on first tap, kills it in second
   LV_LOOP,  //  labview, while loop tool
-  LV_CASE,   //  labview, for loop tool
+  LV_CASE,  //  labview, for loop tool
   LV_VARS,  //  labview, local variable
   EX_ADDR,  //  excel, add row; delete when shifted
   EX_ADDC,  //  excel, add col; delete when shifted
@@ -82,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XS_DEGR,  KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,               KC_HOME,
         XS_SECT,  KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            RSFT_T(KC_ENT),        KC_END,
         XS_MUOM,  _______,            KC_Z,     KC_X,     KC_C,     KC_V,      KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RCTL,      KC_UP,
-        XS_DELT,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                       KC_SPC,             RALT(KC_APP),                 KC_LEFT,      KC_DOWN, KC_RGHT),
+        XS_DELT,  KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC,   _______,                       KC_SPC,             KC_APP,                       KC_LEFT,      KC_DOWN, KC_RGHT),
 
     [_LV] = LAYOUT_ansi_89(
         WIN_ZUM,    _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
@@ -325,6 +325,38 @@ static bool process_tap_or_long_press_key(keyrecord_t* record, uint16_t long_pre
 }
 */
 
+// Add a global modifier behavior to knob encoder
+bool encoder_update_user(uint8_t index, bool clockwise) {
+  // Get current mod and one-shot mod states and mod-detect logic
+  const bool shift_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_SHIFT;
+  const bool ctrl_pressed = (get_mods() | get_oneshot_mods()) & MOD_MASK_CTRL;
+  // get current layer, determine withing range of layers to apply mask to
+  uint8_t layer = get_highest_layer(layer_state); 
+  const bool good_layers = (layer > 0) && (layer < 7);
+  uprintf("Encoder turned %s\n", clockwise ? "CW" : "CCW");
+  if (shift_pressed && good_layers) {
+    uprintf(" + Shift Pressed\n");  
+    if (clockwise) {
+          tap_code(KC_VOLU);
+      } else {
+          tap_code(KC_VOLD);
+      }
+      return false; // Skip encoder_map
+  }
+  if (ctrl_pressed && good_layers) {
+    uprintf(" + Ctrl Pressed\n");  
+    if (clockwise) {
+          tap_code(KC_PGDN);
+      } else {
+          tap_code(KC_PGUP);
+      }
+      return false; // Skip encoder_map
+  }
+  
+  return true; // Let encoder_map handle the default case
+}
+
+
 // Add the behaviour for custom keycodes
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // Get current mod and one-shot mod states.
@@ -335,41 +367,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     //  Layer management
     // ==================
 
-    // Cylce M layer by 1, or if SHIFT up volumne
+    // Cylce M layer by 1
     case LAYERUP:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) {
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          print("SHIFT + LAYERUP!\n");
-          tap_code16(KC_VOLU);
-        } else { // no shift held
-          // +1. then check if we are within the range, if not, go back to 1
-          currLayerID+=1;
-          if (currLayerID > 6) {
-              currLayerID = 1;
-          }
-          uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
-          rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
-          }
+        // +1. then check if we are within the range, if not, go back to 1
+        currLayerID+=1;
+        if (currLayerID > 6) {
+            currLayerID = 1;
+        }
+        uprintf("LAYERUP! New Setting: %2u\n",currLayerID);
+        rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
       }
       return false;
 
-    // Cycle M layer down 1, Vol down when shifter  
+    // Cycle M layer down 1
     case LAYERDN:
       // Our logic will happen on presses, nothing is done on releases
       if (record->event.pressed) { 
-        if ((mods | oneshot_mods) & MOD_MASK_SHIFT) {  // Is shift held?
-          print("SHIFT + LAYERDN!\n");
-          tap_code16(KC_VOLD);
-        } else { // no shift held
-          // -1. then check if we are within the range, if not, go back to 1
-          currLayerID-=1;
-          if (currLayerID < 1) {
-              currLayerID = 6;
-          }
-          uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
-          rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
+        // -1. then check if we are within the range, if not, go back to 1
+        currLayerID-=1;
+        if (currLayerID < 1) {
+            currLayerID = 6;
         }
+        uprintf("LAYERDN! New Setting:%2u\n",currLayerID);
+        rgb_matrix_sethsv_noeeprom(MkeyColors[currLayerID][0],MkeyColors[currLayerID][1],MkeyColors[currLayerID][2]);
       }
       return false;
 
