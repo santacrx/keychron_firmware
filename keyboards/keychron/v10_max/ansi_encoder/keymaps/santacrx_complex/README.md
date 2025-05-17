@@ -172,10 +172,10 @@ When returning from 0, the respective overlay will be activated.
 
 #### Showcase
 * `_BASE` to `_NUM` and back:  
-![NUM layer showcase](http://http://git.santacrx.info/assets/img/keebs/_complex_num.gif)
+![NUM layer showcase](http://git.santacrx.info/assets/img/keebs/_complex_num.gif)
 
 * `_BASE` to `_FN`, selecting macro layer with know, and then going back to `_BASE` where the macro keys are highlighted with the color  
-![Macro changing color and showing in BASE](http://http://git.santacrx.info/assets/img/keebs/_complex_layers.gif)
+![Macro changing color and showing in BASE](http://git.santacrx.info/assets/img/keebs/_complex_layers.gif)
 
 
 ## Worflow / Desired Features / Bugs
