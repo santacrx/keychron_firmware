@@ -133,6 +133,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NUM,     _______,  _______,       		     	_______,      KC_MS_BTN1, _______,                       KC_P0,             KC_PDOT,                      _______,  _______,  _______),
 };
 
+// Add global variable to track modifier states for encoder
+static uint8_t encoder_mod_mask = 0;
+static bool encoder_mod_active = false;
+static uint16_t encoder_mod_timer = 0;
+
 // map what the rotary encoder for the knob does
 #if defined(ENCODER_ENABLE)
 #if defined(ENCODER_MAP_ENABLE)
@@ -150,49 +155,67 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 #else
 // Add a global modifier behavior to override map above
 bool encoder_update_user(uint8_t index, bool clockwise) {
-  // Get current mod and one-shot mod states and mod-detect logic
-  const uint8_t mods = get_mods();
-  const uint8_t oneshot_mods = get_oneshot_mods();
-  const bool shift_pressed = (mods | oneshot_mods) & MOD_MASK_SHIFT;
-  const bool ctrl_pressed = (mods | oneshot_mods) & MOD_MASK_CTRL;
+  // Get current mod state
+  uint8_t mods = get_mods();
+
+  // Check the timer, if more than 500ms, remove active flag
+  if (timer_elapsed(encoder_mod_timer)>500) {
+    encoder_mod_active = false;
+  }
+  // Update timer
+  encoder_mod_timer = timer_read();
+
+  // Update our encoder mod tracking
+  if (mods & (MOD_MASK_SHIFT | MOD_MASK_CTRL)) {
+      encoder_mod_active = true;
+      encoder_mod_mask = mods & (MOD_MASK_SHIFT | MOD_MASK_CTRL);
+  }
   
-  // Get layers and determine ranges where this will be active
+  // Get layer info
   uint8_t layer = get_highest_layer(layer_state);
   const bool good_layers = (layer > _FN) && (layer < _NUM);
   
-  // debug print to console
-  uprintf("Encoder turned %s on layer %d\n", clockwise ? "CW" : "CCW", layer);
+  // Clear any oneshot mods
+  clear_oneshot_mods();
   
-  // Handle modifier-based behavior first
+  // Debug output
+  uprintf("Encoder turned %s on layer %d, mods: %02X\n", 
+          clockwise ? "CW" : "CCW", layer, encoder_mod_mask);
+  
+  // Check our tracked modifier state (not the current state which might be temporarily unregistered)
+  const bool shift_pressed = (encoder_mod_mask & MOD_MASK_SHIFT) && encoder_mod_active;
+  const bool ctrl_pressed = (encoder_mod_mask & MOD_MASK_CTRL)  && encoder_mod_active;
+  
+  // Handle modifier-based behavior
   if (shift_pressed && good_layers) {
-      uprintf(" + Shift Pressed\n");
-      // Temporarily delete shift.
-      del_oneshot_mods(MOD_MASK_SHIFT);
-      unregister_mods(MOD_MASK_SHIFT); 
-      // send modified behvaior 
+      uprintf(" + Shift active\n");
+      
+      // Temporarily unregister shift
+      unregister_mods(MOD_MASK_SHIFT);
+      
+      // Send keycode
       if (clockwise) {
           tap_code(KC_VOLU);
       } else {
           tap_code(KC_VOLD);
       }
-      // Restore mods.
-      register_mods(mods); 
+      
       return false;
-  } 
+  }
   
   if (ctrl_pressed && good_layers) {
-      uprintf(" + Ctrl Pressed\n");
-      // Temporarily delete shift.
-      del_oneshot_mods(MOD_MASK_CTRL);
-      unregister_mods(MOD_MASK_CTRL); 
-      // send modified behvaior 
+      uprintf(" + Ctrl active\n");
+      
+      // Temporarily unregister ctrl
+      unregister_mods(MOD_MASK_CTRL);
+      
+      // Send keycode
       if (clockwise) {
           tap_code(KC_PGDN);
       } else {
           tap_code(KC_PGUP);
       }
-      // Restore mods.
-      register_mods(mods); 
+      
       return false;
   }
   
