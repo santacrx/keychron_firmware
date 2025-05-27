@@ -159,7 +159,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
   uint8_t mods = get_mods();
 
   // Check the timer, if more than 500ms, remove active flag
-  if (timer_elapsed(encoder_mod_timer)>500) {
+  if (timer_elapsed(encoder_mod_timer)>1000) {
     encoder_mod_active = false;
   }
   // Update timer
